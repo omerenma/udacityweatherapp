@@ -8,24 +8,12 @@ const app = express();
 // Port to listen
 const port = 8000;
 
-const projectData = [];
-const api_key = '&appid=8af4c366f1c0b26030723b7ade444db9';
+const projectData = Object.keys({});
+const api_key = '&appid=8af4c366f1c0b26030723b7ade444db9&units=metric ';
 const url =
   'https://api.openweathermap.org/data/2.5/weather?q=abuja,900109,234';
 
 app.use(cors());
-// Function to fetch data from open weather api
-
-const getApiData = async (url, key) => {
-  const response = await fetch(`${url} ${key}`);
-  try {
-    const data = await response.json();
-    projectData.push(data);
-  } catch (e) {
-    console.log('Error', e.message);
-  }
-};
-getApiData(url, api_key);
 
 // Setup cors
 
@@ -37,9 +25,10 @@ app.use(bodyParser.json());
 app.use(express.static('website'));
 
 // GET Route
-app.get('/projectData', async (req, res) => {
+app.get('/all', async (req, res) => {
   const data = await fetchDataFromAppEndPoint();
   res.send(data);
+  console.log(data);
 });
 // Async func to fetch data from the app end point
 const fetchDataFromAppEndPoint = async () => {
@@ -50,7 +39,7 @@ const fetchDataFromAppEndPoint = async () => {
 
 app.post('/projectData', (req, res) => {
   const { zip, feelings } = req.body;
-  console.log(zip, feelings, 'details');
+  console.log(zip, feelings, 'data');
   // Validate data
   if (zip === '' || feelings === '') {
     res.send('Please provide a complete information');
@@ -61,6 +50,7 @@ app.post('/projectData', (req, res) => {
     };
     projectData.push(data);
     res.send(projectData);
+    console.log(projectData);
   }
 });
 
