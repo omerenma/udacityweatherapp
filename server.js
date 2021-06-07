@@ -15,6 +15,7 @@ const url =
 
 app.use(cors());
 
+// Fetch data from Open weather map API and populate the Object
 const getApiData = async (url, key) => {
   await fetch(`${url}${key}`)
     .then((response) => response.json())
