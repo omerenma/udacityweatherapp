@@ -16,16 +16,16 @@ const url =
 app.use(cors());
 
 // Fetch data from Open weather map API and populate the Object
-const getApiData = async (url, key) => {
-  await fetch(`${url}${key}`)
-    .then((response) => response.json())
-    .then((data) => {
-      projectData['temp'] = data.main.temp;
-      projectData['name'] = data.name;
-    })
-    .catch((error) => error);
-};
-getApiData(url, api_key);
+// const getApiData = async (url, key) => {
+//   await fetch(`${url}${key}`)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       projectData['temp'] = data.main.temp;
+//       projectData['name'] = data.name;
+//     })
+//     .catch((error) => error);
+// };
+// getApiData(url, api_key);
 
 // Setup cors
 
@@ -49,7 +49,7 @@ const fetchDataFromAppEndPoint = async () => {
 // POST Route to add data to the app endpoint
 
 app.post('/projectData', (req, res) => {
-  const { zip, feelings } = req.body;
+  const { zip, feelings, name, temp } = req.body;
   // Validate data
   if (zip === '' || feelings === '') {
     res.send('Please provide a complete information');
@@ -57,11 +57,14 @@ app.post('/projectData', (req, res) => {
     const data = {
       zip: zip,
       feelings: feelings,
+      name: name,
+      temp: temp,
     };
     projectData['zip'] = data.zip;
     projectData['feelings'] = data.feelings;
+    projectData['name'] = data.name;
+    projectData['temp'] = data.temp;
     res.send(projectData);
-    console.log(projectData);
   }
 });
 

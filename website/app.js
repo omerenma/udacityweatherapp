@@ -27,46 +27,36 @@ const formData = {
   feelings: document.getElementById('feelings').value,
 };
 
-// Function to fetch data from app endpoint in the server AND Update the UI
-const getApiData = async (url) => {
-  const date = document.getElementById('date');
-  const temp = document.getElementById('temp');
-  const content = document.getElementById('content');
-  // Convert date
-  const d = new Date();
-  const newDate = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+const d = new Date();
+const newDate = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+// Event Listener
 
-  await fetch(`${url}`)
-    .then((response) => response.json())
-    .then((data) => {
-      date.innerHTML = newDate;
-      temp.innerHTML = data.temp;
-      content.innerHTML = data.name;
-    })
-    .catch((error) => error);
+const getWeatherAPI = (e) => {
+  getWeatherData(url, api_key).then((data) => {
+    const formData = {
+      name: data.name,
+      temp: data.main.temp,
+      zip: document.getElementById('zip').value,
+      feelings: document.getElementById('feelings').value,
+    };
+
+    postDataToServer(serverUrl, formData).then(() => {
+      UiUpdate();
+    });
+  });
 };
-// generate.addEventListener('click', (e) => {
-//   e.preventDefault();
-//   getApiData(url, api_key)
-//     .then(() => {
-//       postDataToServer(serverUrl, formData);
-//     })
-//     .then(() => console.log('Success!'));
-// });
-generate.addEventListener('click', (e) => {
-  e.preventDefault();
-  const formData = {
-    zip: document.getElementById('zip').value,
-    feelings: document.getElementById('feelings').value,
-  };
-  getApiData(server_get_url)
-    .then(() => {
-      postDataToServer(serverUrl, formData);
-    })
-    .then(() => console.log('Success!'));
-});
 
-// Async function to make a POST to server
+// Function to fetch data from app endpoint
+const getWeatherData = async (url, key) => {
+  const response = await fetch(url + key);
+  try {
+    const returnedData = await response.json();
+    console.log(returnedData, 'returned data');
+    return returnedData;
+  } catch (error) {
+    return error;
+  }
+};
 
 const postDataToServer = async (url, data) => {
   const response = await fetch(url, {
@@ -82,3 +72,63 @@ const postDataToServer = async (url, data) => {
     return error;
   }
 };
+
+// Function to get data from Server
+
+const getServerData = async (url) => {
+  const res = await fetch(url);
+  try {
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Function to update UI
+const UiUpdate = async () => {
+  const request = await fetch(server_get_url);
+  try {
+    const returnData = await request.json();
+    console.log(returnData, 'allllll');
+    document.getElementById('date').innerHTML = newDate;
+    document.getElementById('zipCode').innerHTML = returnData.zip;
+    document.getElementById('temp').innerHTML = returnData.temp;
+    document.getElementById('content').innerHTML = returnData.feelings;
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+document.getElementById('generate').addEventListener('click', getWeatherAPI);
+
+// const getApiData = async (url) => {
+//   const date = document.getElementById('date');
+//   const temp = document.getElementById('temp');
+//   const content = document.getElementById('content');
+//   // Convert date
+//   const d = new Date();
+//   const newDate = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+//   await fetch(`${url}`)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       date.innerHTML = newDate;
+//       temp.innerHTML = data.temp;
+//       content.innerHTML = data.name;
+//     })
+//     .catch((error) => error);
+// };
+
+// generate.addEventListener('click', (e) => {
+//   e.preventDefault();
+//   const formData = {
+//     zip: document.getElementById('zip').value,
+//     feelings: document.getElementById('feelings').value,
+//   };
+//   getApiData(server_get_url)
+//     .then(() => {
+//       postDataToServer(serverUrl, formData);
+//     })
+//     .then(() => console.log('Success!'));
+// });
+
+// Async function to make a POST to server
