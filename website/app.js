@@ -28,7 +28,7 @@ const formData = {
 };
 
 // Function to fetch data from app endpoint in the server AND Update the UI
-const getApiData = async (url, key) => {
+const getApiData = async (url) => {
   const date = document.getElementById('date');
   const temp = document.getElementById('temp');
   const content = document.getElementById('content');
@@ -36,11 +36,11 @@ const getApiData = async (url, key) => {
   const d = new Date();
   const newDate = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
 
-  await fetch(`${url}${key}`)
+  await fetch(`${url}`)
     .then((response) => response.json())
     .then((data) => {
       date.innerHTML = newDate;
-      temp.innerHTML = data.main.temp;
+      temp.innerHTML = data.temp;
       content.innerHTML = data.name;
     })
     .catch((error) => error);
@@ -59,7 +59,7 @@ generate.addEventListener('click', (e) => {
     zip: document.getElementById('zip').value,
     feelings: document.getElementById('feelings').value,
   };
-  getApiData(url, api_key)
+  getApiData(server_get_url)
     .then(() => {
       postDataToServer(serverUrl, formData);
     })
